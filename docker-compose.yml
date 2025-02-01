@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .  # Sử dụng thư mục hiện tại để build Dockerfile
+      dockerfile: Dockerfile
+    container_name: fe  # Đặt tên cho container
+    ports: 
+      - "3000:3000"
+    volumes:
+      - .:/app  # Mount thư mục hiện tại vào container để hỗ trợ hot-reload
+      - /app/node_modules  # Tránh ghi đè thư mục node_modules trong container
+    restart: always  # Tự động khởi động lại container nếu bị dừng
+
+  nginx:
+    image: nginx:alpine  # Sử dụng image Nginx chính thức
+    container_name: fe_nginx  # Đặt tên cho container Nginx
+    ports:
+      - "80:80"  # Ánh xạ cổng 80 của container ra cổng 3000 trên máy chủ
+    volumes:
+      - ./dist:/var/www/vpncn2-fe/dist 
+      - ./src:/var/www/vpncn2-fe/src
+      - ./public:/var/www/vpncn2-fe/public # Mount thư mục build vào Nginx
+      - ./nginx/vpncn2.top.conf:/etc/nginx/conf.d/default.conf  # Mount file cấu hình Nginx
+      - ..env:/var/www/vpncn2-fe/.env
+    depends_on:
+      - react-app  # Đảm bảo React container chạy trước
+    restart: always
