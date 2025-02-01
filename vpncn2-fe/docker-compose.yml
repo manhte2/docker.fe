@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .  # Sử dụng thư mục hiện tại để build Dockerfile
+      dockerfile: Dockerfile
+    container_name: fe  # Đặt tên cho container
+    ports: 
+      - "3000:3000"
+    volumes:
+      - .:/app  # Mount thư mục hiện tại vào container để hỗ trợ hot-reload
+      - /app/node_modules  # Tránh ghi đè thư mục node_modules trong container
+    restart: always  # Tự động khởi động lại container nếu bị dừng
